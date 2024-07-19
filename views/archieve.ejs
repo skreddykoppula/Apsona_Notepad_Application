@@ -1,0 +1,29 @@
+<div class="container mx-auto px-4 py-6">
+    <h1 class="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
+        <%= title %>
+    </h1>
+    <div class="grid grid-cols-1 gap-6">
+        <% for (let i = 0; i < data.length; i++) { %>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-transform transform hover:scale-105">
+            <div class="px-6 py-4">
+                <button type="button" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mb-4" onclick="archieveRestore('<%= data[i]._id %>')">
+                    Restore
+                </button>
+                <h2 class="font-semibold text-xl text-gray-900 dark:text-gray-100 mb-3 truncate">
+                    <%= data[i].title %>
+                </h2>
+                <p class="text-gray-700 dark:text-gray-300 mb-4">
+                    <%= data[i].content %>
+                </p>
+                <div class="flex flex-wrap gap-2">
+                    <% for (let j = 0; j < data[i].label.length; j++) { %>
+                    <span class="inline-block bg-gray-200 dark:bg-gray-700 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        #<%= data[i].label[j] %>
+                    </span>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+        <% } %>
+    </div>
+</div>

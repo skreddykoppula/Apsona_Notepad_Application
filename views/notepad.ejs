@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notepad Application</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script>
+        function deleteNote(id) {
+            fetch(`notes/delete/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            })
+            .then((res) => {
+                if (res.ok) {
+                    window.location.reload();
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function ArchieveNote(id) {
+            fetch(`notes/archieve/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            })
+            .then((res) => {
+                if (res.ok) {
+                    window.location.reload();
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function deleteRestore(id) {
+            fetch(`notes/deleterestore/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            })
+            .then((res) => {
+                if (res.ok) {
+                    window.location.reload();
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function archieveRestore(id) {
+            fetch(`notes/archieverestore/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            })
+            .then((res) => {
+                if (res.ok) {
+                    window.location.reload();
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function AddLabel(id) {
+            const cardId = `card-${id}`;
+            const addlabel = document.getElementById(`addlabel-${cardId}`);
+
+            // Check if already 9 labels
+            const existingLabels = document.querySelectorAll(`#addlabel-${cardId} .label-item`);
+            if (existingLabels.length >= 9) {
+                alert("You can add at most 9 labels.");
+                return;
+            }
+
+            addlabel.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="small-input-${cardId}" class="block flex-1 p-2 text-gray-900 border border-gray-300 rounded-lg bg-white-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-300 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <button type="button" onclick="addLabelToDB('${id}')" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Add</button>
+                </div>
+            `;
+        }
+
+        function addLabelToDB(id) {
+            const label = document.getElementById(`small-input-card-${id}`).value;
+
+            fetch(`/notes/addLabel/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ label })
+            })
+            .then((res) => {
+                if (res.ok) {
+                    window.location.reload(); 
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+
+
+            
+        }
+    </script>
+</head>
+
+<body class="bg-slate-300 text-gray-900 dark:text-white min-h-screen">
+    <%- include('partials/header.ejs') %>
+    <div class="flex flex-col items-center justify-center py-10">
+        <div class="w-full max-w-4xl p-6 bg-white dark:bg-gray-900 rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold text-center text-gray-800 dark:text-white mb-6">Notepad Application</h2>
+            <form action="/notes" method="POST" class="mb-6 space-y-4">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <input type="text" name="title" placeholder="What's next?" class="w-full p-3 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-white dark:placeholder-gray-400" required />
+                    </div>
+                    <div class="flex-1">
+                        <input type="textarea" name="content" placeholder="Content" class="w-full p-3 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-white dark:placeholder-gray-400" />
+                    </div>
+                    <div>
+                        <button type="submit" class="w-full text-gray-900 bg-green-600 hover:bg-green-800 font-medium rounded-lg px-5 py-2.5 shadow-md transition-colors duration-300">Add</button>
+                    </div>
+                </div>
+            </form>
+            <%- include('archieve.ejs', { title: "Archieved", data: Archieved }) %>
+            <%- include('note.ejs', { title: "Notes", data: notes }) %>
+            <%- include('delete.ejs', { title: "Deleted", data: Deleted }) %>
+        </div>
+    </div>
+</body>
+
+</html>

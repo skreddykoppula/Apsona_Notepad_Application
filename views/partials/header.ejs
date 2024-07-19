@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notepad Application</title>
+    <link
+      id="tailwindcss"
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      // Check localStorage and switch to dark theme if necessary
+      document.addEventListener("DOMContentLoaded", () => {
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "dark") {
+          document.getElementById("tailwindcss").href =
+            "https://cdn.tailwindcss.com";
+          document.body.classList.add("dark");
+        }
+      });
+
+      function toggleTheme() {
+        const body = document.body;
+        const isDarkMode = body.classList.toggle("dark");
+        localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+        document.getElementById("tailwindcss").href = isDarkMode
+          ? "https://cdn.tailwindcss.com"
+          : "https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css";
+      }
+
+      function searchNotes(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const query = document.getElementById("default-search").value.trim(); // Get search query
+        console.log(query);
+        if (query === "") {
+          // Handle empty search query if needed
+          return;
+        }
+
+        fetch(`/notes/search?query=${query}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((res) => {
+            if (res.ok) {
+              window.location.href = `/notes/search`; // Parse JSON response
+            } else {
+              throw new Error("Search request failed");
+            }
+          })
+          .then((data) => {
+            // Handle the data received from the server, e.g., update UI
+            console.log("Search results:", data);
+
+            // Example: Redirect to search results page after handling data
+            window.location.href = `/notes/search?query=${encodeURIComponent(
+              query
+            )}`;
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            // Handle error scenarios here (e.g., show error message to the user)
+          });
+      }
+    </script>
+  </head>
+
+  <body
+    class="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white flex flex-col min-h-screen"
+  >
+    <header class="bg-white dark:bg-gray-900 shadow-md w-full">
+      <div
+        class="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center"
+      >
+        <% if (user) { %>
+        <div class="flex items-center">
+          <span class="text-gray-600 dark:text-gray-300"
+            >Hi, <%= user.firstName + " " + user.lastName %></span
+          >
+        </div>
+
+        <form class="max-w-md mx-auto" onsubmit="searchNotes(event)">
+          <label
+            for="default-search"
+            class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+            >Search</label
+          >
+          <div class="relative">
+            <input
+              type="search"
+              id="default-search"
+              class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Search Label"
+              required
+            />
+            <button
+              type="submit"
+              class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            >
+              Search
+            </button>
+          </div>
+        </form>
+
+        <div class="flex items-center">
+          <label
+            for="toggleTheme"
+            class="inline-flex items-center cursor-pointer"
+          >
+            <input
+              type="checkbox"
+              id="toggleTheme"
+              class="sr-only peer"
+              onchange="toggleTheme()"
+            />
+            <div
+              class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
+            ></div>
+          </label>
+        </div>
+
+        <div class="flex items-center ml-4">
+          <a
+            href="/logout"
+            class="bg-green-500 hover:bg-green-600 text-gray-900 py-2 px-4 rounded-lg text-center"
+            >Logout</a
+          >
+        </div>
+        <% } else { %>
+        <div class="flex flex-1 justify-center items-center text-center">
+          <span class="text-3xl text-gray-600 dark:text-gray-300"
+            >Welcome to Notepad Application</span
+          >
+        </div>
+        <% } %>
+      </div>
+    </header>
+
+    <main class="flex flex-1 justify-center items-center">
+      <% if (!user) { %>
+      <div class="text-center">
+        <h1 class="text-4xl font-bold mb-4">Welcome to Notepad Application</h1>
+        <p class="text-lg mb-6">Please sign up or log in to continue.</p>
+        <div class="flex justify-center space-x-4">
+          <a
+            href="/signup"
+            class="font-medium bg-green-500 hover:bg-green-600 text-gray-900 py-2 px-6 rounded-lg text-center"
+            >Signup now</a
+          >
+          <a
+            href="/login"
+            class="font-medium bg-green-500 hover:bg-green-600 text-gray-900 py-2 px-6 rounded-lg text-center"
+            >Sign in</a
+          >
+        </div>
+      </div>
+      <% } %>
+    </main>
+  </body>
+</html>
