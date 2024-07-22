@@ -33,6 +33,8 @@ const NoteSchema = mongoose.Schema(
   }
 );
 
+NoteSchema.index({ updatedAt: 1 }, { expireAfterSeconds: 86400 }); //30 days
+
 NoteSchema.methods = {
 
     async addLabel(label) {
